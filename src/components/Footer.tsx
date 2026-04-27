@@ -1,129 +1,62 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook } from 'lucide-react';
-
-const TikTokIcon = (props: { size?: number; className?: string }) => {
-  const size = props.size ?? 20;
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
-      aria-hidden="true"
-    >
-      <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.372V2h-3.58v13.2a2.988 2.988 0 0 1-2.99 2.99 2.988 2.988 0 0 1-2.99-2.99 2.988 2.988 0 0 1 2.99-2.99c.304 0 .598.047.875.133V8.69a6.58 6.58 0 0 0-.875-.06A6.57 6.57 0 0 0 2.68 15.2a6.57 6.57 0 0 0 6.57 6.57 6.57 6.57 0 0 0 6.57-6.57V9.207a8.318 8.318 0 0 0 3.77.92V6.686Z" />
-    </svg>
-  );
-};
 
 export const Footer = () => {
   return (
-    <footer className="bg-school-green text-white pt-16 pb-8">
+    <footer className="bg-school-navy text-white pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-12 w-12 rounded-xl bg-white/95 overflow-hidden border border-white/20 shadow-lg">
-                <img
-                  src="/assets/Copilot_20260418_114207.png"
-                  alt="My Hargreaves SSS logo"
-                  className="h-full w-full object-cover"
-                />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <img src="/Logo.png" alt="Logo" className="h-14 w-14 bg-white p-1 rounded-xl" />
+              <div className="font-black leading-none">
+                <p className="text-2xl tracking-tighter">MALUTI SSS</p>
+                <p className="text-[10px] text-blue-300 uppercase tracking-widest">Matatiele, EC</p>
               </div>
-              <h3 className="text-2xl font-bold">My Hargreaves SSS</h3>
             </div>
-            <p className="text-white/80 mb-6 italic">"we can"</p>
+            <p className="text-blue-100 font-light leading-relaxed mb-8">
+              A high-standard, no-fee Senior Secondary School dedicated to producing top national achievers in the Eastern Cape.
+            </p>
             <div className="flex gap-4">
-              <a
-                href="https://www.facebook.com/MT.Hargreaves/"
-                target="_blank"
-                rel="noreferrer"
-                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Facebook"
-              >
+              <a href="https://www.facebook.com/Maluti-SSS-G12-113845124132746/" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                 <Facebook size={20} />
               </a>
-              <a
-                href="https://www.tiktok.com/@mt.hargreavessss"
-                target="_blank"
-                rel="noreferrer"
-                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="TikTok"
-              >
-                <TikTokIcon size={20} />
-              </a>
             </div>
           </div>
 
           <div>
-            <h4 className="text-lg font-bold mb-6 border-b border-white/20 pb-2">Contact Us</h4>
-            <ul className="space-y-4 text-white/80">
-              <li className="flex items-start gap-3">
-                <MapPin className="shrink-0 mt-1" size={18} />
-                <span>Sigoga Location, Mgubo A/A, Matatiele, 4730 (Eastern Cape)</span>
+            <h4 className="text-lg font-black uppercase tracking-widest mb-8 border-b border-white/10 pb-2">Contact</h4>
+            <ul className="space-y-6">
+              <li className="flex items-start gap-4">
+                <MapPin className="text-blue-400 shrink-0" size={20} />
+                <span className="text-blue-50 font-light">Ramohlakoawa A/A, Maluti, 4740, Matatiele, Eastern Cape</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone size={18} />
-                <span>+27 76 707 3212</span>
+              <li className="flex items-center gap-4">
+                <Phone className="text-blue-400 shrink-0" size={20} />
+                <span className="text-blue-50 font-light">039 256 7244 / +27 78 065 1426</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail size={18} />
-                <span>office@mounthargreavesss.co.za</span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-bold mb-6 border-b border-white/20 pb-2">Quick Links</h4>
-            <ul className="space-y-3 text-white/80">
-              <li>
-                <a href="/about" className="hover:text-white transition-colors">About Our School</a>
-              </li>
-              <li>
-                <a href="/documents" className="hover:text-white transition-colors">Documents</a>
-              </li>
-              <li>
-                <a href="/achievements" className="hover:text-white transition-colors">Achievements</a>
-              </li>
-              <li>
-                <a href="/admissions" className="hover:text-white transition-colors">General Application</a>
-              </li>
-              <li>
-                <a href="/boarding" className="hover:text-white transition-colors">Boarding Application</a>
-              </li>
-              <li>
-                <a href="/student/login" className="hover:text-white transition-colors">Student Portal</a>
+              <li className="flex items-center gap-4">
+                <Mail className="text-blue-400 shrink-0" size={20} />
+                <span className="text-blue-50 font-light">admin@malutisss.co.za</span>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-lg font-bold mb-6 border-b border-white/20 pb-2">School Hours</h4>
-            <ul className="space-y-3 text-white/80">
-              <li className="flex justify-between">
-                <span>Mon - Thu:</span> <span>07:30 - 15:30</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Friday:</span> <span>07:30 - 13:30</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Sat - Sun:</span> <span>Closed</span>
-              </li>
-            </ul>
+            <h4 className="text-lg font-black uppercase tracking-widest mb-8 border-b border-white/10 pb-2">Quick Links</h4>
+            <div className="grid grid-cols-2 gap-4">
+                <a href="/admissions" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">2027 Admission</a>
+                <a href="/boarding" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">Boarding</a>
+                <a href="/achievements" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">Results</a>
+                <a href="/student/login" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">Student Portal</a>
+                <a href="/about" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">History</a>
+                <a href="/documents" className="text-blue-100 hover:text-white transition-colors text-sm font-bold">Resources</a>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 text-center text-white/70 text-sm">
-          <p>© {new Date().getFullYear()} My Hargreaves Senior Secondary School. All Rights Reserved.</p>
-          <Link
-            to="/admin/login"
-            className="text-white/40 hover:text-white/70 text-xs mt-2 inline-block transition-colors"
-          >
-            Staff Portal
-          </Link>
+        <div className="pt-10 border-t border-white/5 text-center text-blue-300/50 text-[10px] font-bold uppercase tracking-[0.3em]">
+          <p>© {new Date().getFullYear()} Maluti Senior Secondary School. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

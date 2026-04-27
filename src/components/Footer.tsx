@@ -8,7 +8,8 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <img src="/Logo.png" alt="Logo" className="h-14 w-14 bg-white p-1 rounded-xl" />
+              {/* FIXED: Changed /Logo.png to /logo.png. Ensure the file in your public folder matches this exactly */}
+              <img src="/logo.png" alt="Maluti SSS Logo" className="h-14 w-14 bg-white p-1 rounded-xl" />
               <div className="font-black leading-none">
                 <p className="text-2xl tracking-tighter">MALUTI SSS</p>
                 <p className="text-[10px] text-blue-300 uppercase tracking-widest">Matatiele, EC</p>
@@ -18,7 +19,7 @@ export const Footer = () => {
               A high-standard, no-fee Senior Secondary School dedicated to producing top national achievers in the Eastern Cape.
             </p>
             <div className="flex gap-4">
-              <a href="https://www.facebook.com/Maluti-SSS-G12-113845124132746/" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+              <a href="https://www.facebook.com/Maluti-SSS-G12-113845124132746/" target="_blank" rel="noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                 <Facebook size={20} />
               </a>
             </div>

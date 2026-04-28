@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -8,8 +9,9 @@ const navLinks = [
   { name: 'Documents', path: '/documents' },
   { name: 'Achievements', path: '/achievements' },
   { name: 'Sport', path: '/sport' },
+  { name: 'Activities', path: '/activities' },
   { name: 'General Application', path: '/admissions' },
-  { name: 'Boarding', path: '/boarding' },
+  { name: 'Boarding Application', path: '/boarding' },
   { name: 'Contact', path: '/contact' },
 ];
 
@@ -18,44 +20,63 @@ export const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="glass-nav shadow-xl">
+    <nav className="glass-nav">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center p-1 shadow-inner overflow-hidden">
-                <img src="/Logo.png" alt="Maluti SSS Logo" className="h-full w-full object-contain" />
+              <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
+                <img
+                  src="/assets/Logo.png"
+                  alt="Maluti SSS logo"
+                  className="h-full w-full object-contain p-1"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
               </div>
-              <div className="hidden md:block text-white leading-none">
-                <span className="text-xl font-black block tracking-tighter">MALUTI SSS</span>
-                <span className="text-[9px] font-bold text-blue-200 uppercase tracking-[0.2em]">Senior Secondary School</span>
+              <div className="hidden md:block">
+                <span className="text-lg font-bold text-white block leading-none">Maluti SSS</span>
+                <span className="text-xs font-semibold text-white/60 uppercase tracking-widest">Senior Secondary School</span>
               </div>
             </Link>
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${
+                className={cn(
+                  'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   location.pathname === link.path
-                    ? 'bg-white text-school-navy shadow-lg'
-                    : 'text-white hover:bg-white/10'
-                }`}
+                    ? 'text-white bg-white/20'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                )}
               >
                 {link.name}
               </Link>
             ))}
-            <Link to="/student/login" className="ml-2 bg-white text-school-navy px-4 py-2 rounded-lg text-xs font-black flex items-center gap-2 hover:bg-blue-50 transition-colors">
-              <User size={14} /> PORTAL
+
+            <Link
+              to="/student/login"
+              className={cn(
+                'px-3 py-2 rounded-md text-sm font-bold transition-colors inline-flex items-center gap-2 ml-2',
+                location.pathname.startsWith('/student')
+                  ? 'text-[#0B1F3B] bg-white'
+                  : 'text-[#0B1F3B] bg-white hover:bg-gray-100'
+              )}
+            >
+              <User size={16} /> Student Portal
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-white p-2">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white hover:text-white/70 p-2"
+              aria-label="Open menu"
+            >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
@@ -64,22 +85,37 @@ export const Navbar = () => {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="md:hidden bg-school-navy border-t border-white/10 px-4 pt-2 pb-6 space-y-1">
-          {navLinks.map((link) => (
+        <div className="md:hidden bg-[#0B1F3B] border-b border-white/10">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  'block px-3 py-2 rounded-md text-base font-medium',
+                  location.pathname === link.path
+                    ? 'text-white bg-white/20'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+
             <Link
-              key={link.path}
-              to={link.path}
+              to="/student/login"
               onClick={() => setIsOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-sm font-bold uppercase tracking-widest ${
-                location.pathname === link.path ? 'bg-white text-school-navy' : 'text-white'
-              }`}
+              className={cn(
+                'block px-3 py-2 rounded-md text-base font-bold',
+                location.pathname.startsWith('/student')
+                  ? 'text-[#0B1F3B] bg-white'
+                  : 'text-[#0B1F3B] bg-white'
+              )}
             >
-              {link.name}
+              Student Portal
             </Link>
-          ))}
-          <Link to="/student/login" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl bg-blue-500 text-white text-sm font-black uppercase text-center mt-4">
-            Student Portal
-          </Link>
+          </div>
         </div>
       )}
     </nav>

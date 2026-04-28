@@ -8,9 +8,9 @@ export const About = () => {
   const [campusFailed, setCampusFailed] = useState(false);
   const [principalFailed, setPrincipalFailed] = useState(false);
 
-  // Updated paths to match your GitHub public folder root
-  const campusImageUrl = '/campus.png';
-  const principalImageUrl = '/principal.jpg';
+  // Added ?v=1 to force the browser to reload the image from the server
+  const campusImageUrl = '/campus.png?v=1'; 
+  const principalImageUrl = '/principal.jpg?v=1';
 
   useEffect(() => {
     setData(getAbout());
@@ -18,96 +18,86 @@ export const About = () => {
 
   return (
     <div className="py-12 sm:py-16 bg-[#0B1F3B] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-12 text-center">About Maluti Senior Secondary School</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-12 text-center uppercase tracking-tight">About Maluti SSS</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-16 sm:mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-16">
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-2xl font-bold text-white mb-6">Our School</h2>
-            <div className="space-y-4 text-white/70 leading-relaxed">
+            <h2 className="text-2xl font-bold text-white mb-6 border-l-4 border-white pl-4">Our School</h2>
+            <div className="space-y-4 text-white/70 leading-relaxed text-lg">
               {data.historyParagraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { label: 'Address', value: 'Ramohlakoawa A/A, Maluti, 4740' },
-                { label: 'Phone', value: '039-256-7244' },
-                { label: 'Mobile', value: '+27 78 065-1426' },
                 { label: 'EMIS', value: '200500551' },
-                { label: 'Quintile', value: '3 — No-Fee School' },
+                { label: 'Contact', value: '039-256-7244' },
+                { label: 'Quintile', value: '3 (No-Fee)' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/50 text-xs uppercase tracking-widest font-bold mb-1">{item.label}</p>
-                  <p className="text-white font-semibold text-sm">{item.value}</p>
+                  <p className="text-white/40 text-[10px] uppercase tracking-widest font-black mb-1">{item.label}</p>
+                  <p className="text-white font-bold text-sm">{item.value}</p>
                 </div>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 24 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20 aspect-video"
+            className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-white/5 aspect-video flex items-center justify-center"
           >
-            {!campusFailed ? (
-              <img
-                src={campusImageUrl}
-                alt="Maluti SSS campus"
-                className="w-full h-full object-cover"
-                onError={() => setCampusFailed(true)}
-              />
-            ) : (
-              <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white/40">
-                <div className="text-center">
-                  <ImageIcon size={48} className="mx-auto mb-2" />
-                  <p>Campus Image Missing</p>
-                </div>
+            <img
+              src={campusImageUrl}
+              alt="Maluti SSS campus"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error("Image failed to load:", campusImageUrl);
+                setCampusFailed(true);
+              }}
+            />
+            {campusFailed && (
+              <div className="text-center p-10">
+                <ImageIcon size={48} className="text-white/20 mx-auto mb-4" />
+                <p className="text-white/40 text-sm">Campus photo loading...</p>
+                <p className="text-white/20 text-[10px] mt-2 italic">Check if file is in public/campus.png</p>
               </div>
             )}
           </motion.div>
         </div>
 
-        {/* Principal's Message */}
-        <section className="bg-white/5 rounded-3xl p-6 sm:p-10 md:p-12 mb-16 relative overflow-hidden border border-white/10">
-          <div className="absolute top-0 right-0 p-8 text-white/5">
-            <Quote size={120} />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 items-center relative z-10">
-            <div className="col-span-1">
-              <div className="aspect-square rounded-2xl overflow-hidden border-4 border-white/20 shadow-lg bg-white/10">
-                {!principalFailed ? (
-                  <img
-                    src={principalImageUrl}
-                    alt="Principal"
-                    className="w-full h-full object-cover object-top"
-                    onError={() => setPrincipalFailed(true)}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/30">
-                    <ImageIcon size={40} />
-                  </div>
-                )}
+        <section className="bg-white/5 rounded-3xl p-8 md:p-12 mb-16 border border-white/10 relative overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center relative z-10">
+            <div className="col-span-1 text-center">
+              <div className="aspect-square rounded-2xl overflow-hidden border-2 border-white/20 mb-6 bg-white/5">
+                <img
+                  src={principalImageUrl}
+                  alt="Principal"
+                  className="w-full h-full object-cover object-top"
+                  onError={(e) => {
+                    setPrincipalFailed(true);
+                    (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=Principal&background=0B1F3B&color=fff&size=512";
+                  }}
+                />
               </div>
-
-              <div className="mt-4 text-center">
-                <h3 className="text-xl font-bold text-white">{data.principalName}</h3>
-                <p className="text-white/60">{data.principalTitle}</p>
-              </div>
+              <h3 className="text-xl font-bold text-white">{data.principalName}</h3>
+              <p className="text-white/50 text-sm">{data.principalTitle}</p>
             </div>
 
             <div className="col-span-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 italic">Principal's Message</h2>
-              <div className="space-y-4 text-white/80 text-base sm:text-lg leading-relaxed">
+              <Quote className="text-white/10 mb-4" size={40} />
+              <h2 className="text-3xl font-bold text-white mb-6 italic">Principal's Message</h2>
+              <div className="space-y-4 text-white/80 text-lg leading-relaxed italic">
                 {data.principalMessage.map((p, i) => (
                   <p key={i}>"{p}"</p>
                 ))}

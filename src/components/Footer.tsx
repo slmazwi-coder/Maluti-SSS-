@@ -10,7 +10,7 @@ export const Footer = () => {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-5">
               <img
-                src="/Logo.png"
+                src="/Logo2.png"
                 alt="Maluti SSS logo"
                 className="h-16 w-16 object-contain"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

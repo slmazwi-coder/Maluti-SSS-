@@ -1,102 +1,330 @@
-import React from 'react';
-import { Trophy, Medal, Award, Star, TrendingUp } from 'lucide-react';
-import { getHallOfFame } from '../admin/utils/storage';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Trophy, Star, TrendingUp, BarChart3, Medal, Calendar, Award, Image as ImageIcon } from 'lucide-react';
+import { getHallOfFame, getResultsByYear, type HallOfFameEntry, type YearResults } from '../admin/utils/storage';
 
-export const Achievements = () => {
-  const hall = getHallOfFame();
-  const matubatuba = hall.find((h: any) => h.id === 'mat-2025');
+const StudentAvatar = ({ image, name, year }: { image: string; name: string; year: string }) => {
+  const [hasError, setHasError] = useState(!image);
 
   return (
-    <div className="py-20 bg-white min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title">Academic Achievements</h1>
-        
-        {/* TOP ACHIEVER BANNER */}
-        {matubatuba && (
-          <div className="bg-school-navy text-white rounded-[3rem] overflow-hidden mb-20 shadow-2xl border-4 border-white/5 flex flex-col lg:flex-row items-stretch">
-            <div className="lg:w-1/3 bg-white flex items-center justify-center p-3">
-              <img 
-                src="/Achiever2025.png" 
-                alt="Matubatuba Kanetso" 
-                className="w-full h-[450px] object-cover rounded-[2rem] shadow-2xl"
-              />
-            </div>
-            <div className="lg:w-2/3 p-10 md:p-16 flex flex-col justify-center bg-gradient-to-br from-school-navy to-blue-900">
-              <div className="flex items-center gap-3 text-yellow-400 font-black text-xs uppercase tracking-[0.3em] mb-6">
-                <Trophy size={24} /> 2025 Provincial Spotlight
-              </div>
-              <h2 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none italic">
-                Matubatuba <br/>Kanetso
-              </h2>
-              <p className="text-2xl text-blue-100 mb-10 leading-relaxed font-light max-w-xl">
-                "Achieved an incredible 7 Distinctions in the 2025 NSC Examinations. Recognized as one of the top performing students in the Eastern Cape Province."
-              </p>
-              <div className="flex flex-wrap gap-6">
-                <div className="bg-white/10 backdrop-blur-xl px-8 py-5 rounded-2xl border border-white/20">
-                  <div className="text-[10px] font-bold text-blue-300 uppercase tracking-widest mb-1">Distinctions</div>
-                  <div className="text-4xl font-black">07</div>
-                </div>
-                <div className="bg-white/10 backdrop-blur-xl px-8 py-5 rounded-2xl border border-white/20">
-                  <div className="text-[10px] font-bold text-blue-300 uppercase tracking-widest mb-1">Status</div>
-                  <div className="text-4xl font-black italic">TOP 10</div>
-                </div>
-              </div>
-            </div>
+    <div className="aspect-[3/4] sm:aspect-square w-full relative overflow-hidden bg-white/10 rounded-2xl shadow-lg border border-white/20 flex items-center justify-center group">
+      {!hasError ? (
+        <img
+          src={image}
+          alt={name}
+          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+          onError={() => setHasError(true)}
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center text-white/50 p-6 text-center">
+          <div className="mb-4 w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20">
+            <ImageIcon className="opacity-60" />
           </div>
-        )}
-
-        {/* STATS BREAKDOWN */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-            <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                <div className="flex items-center gap-4 mb-6">
-                    <TrendingUp className="text-school-navy" size={32} />
-                    <h3 className="text-2xl font-black text-school-navy uppercase tracking-tighter">2025 Matric Pass Rate</h3>
-                </div>
-                <div className="text-7xl font-black text-school-navy mb-2">83.0%</div>
-                <p className="text-gray-500 font-medium italic">191 Learners passed out of 230 candidates</p>
-            </div>
-            <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                <div className="flex items-center gap-4 mb-6">
-                    <Award className="text-school-navy" size={32} />
-                    <h3 className="text-2xl font-black text-school-navy uppercase tracking-tighter">Subject Excellence</h3>
-                </div>
-                <div className="text-7xl font-black text-school-navy mb-2">90</div>
-                <p className="text-gray-500 font-medium italic">Total number of subject distinctions in 2025</p>
-            </div>
+          <p className="text-sm font-bold uppercase tracking-widest text-white/50 mb-1">{name}</p>
+          <p className="text-xs text-white/40 italic">Class of {year}</p>
+          <p className="text-[11px] text-white/30 mt-2">
+            Add image in <span className="font-mono">public/assets/achievements/</span>
+          </p>
         </div>
+      )}
+      <div className="absolute top-0 right-0 bg-white/10 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+        <Award size={24} />
+      </div>
+    </div>
+  );
+};
 
-        {/* HALL OF FAME */}
-        <div className="pt-16 border-t border-gray-100">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-4xl font-black text-school-navy uppercase tracking-tighter flex items-center gap-3">
-              <Medal size={40} /> Hall of Fame
-            </h2>
-          </div>
+export const Achievements = () => {
+  const [activeResultsYear, setActiveResultsYear] = useState<'2025' | '2024' | '2023'>('2025');
+  const [activeAchieversYear, setActiveAchieversYear] = useState<string>('2025');
+  const [hallOfFame, setHallOfFame] = useState<HallOfFameEntry[]>(getHallOfFame());
+  const [currentResults, setCurrentResults] = useState<YearResults | null>(getResultsByYear(activeResultsYear));
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {hall.map((entry: any) => (
-              <div key={entry.id} className="card group !p-0 overflow-hidden border-none shadow-none">
-                <div className="aspect-[4/5] rounded-3xl overflow-hidden mb-6 bg-gray-100 relative shadow-xl">
-                  {entry.image ? (
-                    <img src={entry.image} alt={entry.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-200">
-                      <Star size={64} fill="currentColor" />
-                    </div>
-                  )}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-school-navy to-transparent p-6 pt-20">
-                     <p className="text-white font-black text-lg">{entry.name}</p>
-                     <p className="text-blue-300 text-xs font-bold uppercase tracking-widest">{entry.title}</p>
+  useEffect(() => {
+    setHallOfFame(getHallOfFame());
+  }, []);
+
+  useEffect(() => {
+    setCurrentResults(getResultsByYear(activeResultsYear));
+  }, [activeResultsYear]);
+
+  const achieversByYear: Record<string, HallOfFameEntry[]> = {};
+  hallOfFame.forEach((entry) => {
+    if (!achieversByYear[entry.year]) achieversByYear[entry.year] = [];
+    achieversByYear[entry.year].push(entry);
+  });
+
+  const yearsList = Object.keys(achieversByYear).sort((a, b) => parseInt(b) - parseInt(a));
+  if (yearsList.length > 0 && !yearsList.includes(activeAchieversYear)) {
+    setActiveAchieversYear(yearsList[0]);
+  }
+
+  return (
+    <div className="py-12 sm:py-16 bg-[#0B1F3B] min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="section-title text-center mb-12 sm:mb-16">Academic Excellence</h1>
+
+        {/* 2025 Highlight Banner */}
+        <section className="mb-16 sm:mb-24">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+              <Star size={200} className="text-[#0B1F3B]" />
+            </div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-10">
+              <div className="w-32 h-32 sm:w-40 sm:h-40 bg-[#0B1F3B] rounded-full flex flex-col items-center justify-center text-white border-8 border-[#0B1F3B]/20 shadow-lg shrink-0">
+                <span className="text-3xl sm:text-4xl font-black">83%</span>
+                <span className="text-sm font-bold uppercase tracking-tighter italic">Pass Rate</span>
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-[#0B1F3B] font-bold uppercase tracking-widest text-sm mb-2">
+                  <Star size={16} fill="currentColor" /> 2025 Matric Highlight <Star size={16} fill="currentColor" />
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-[#0B1F3B] mb-4 text-center md:text-left">
+                  Celebrating strong results
+                </h2>
+                <p className="text-base sm:text-lg text-gray-700 max-w-2xl italic leading-relaxed text-center md:text-left">
+                  "191 learners passed out of 230 candidates — 90 distinctions earned. Maluti SSS continues to focus on academic excellence and learner support."
+                </p>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <div className="bg-[#0B1F3B]/10 rounded-xl px-5 py-3 text-center">
+                    <p className="text-2xl font-black text-[#0B1F3B]">191</p>
+                    <p className="text-xs text-gray-600 font-semibold">Learners Passed</p>
+                  </div>
+                  <div className="bg-[#0B1F3B]/10 rounded-xl px-5 py-3 text-center">
+                    <p className="text-2xl font-black text-[#0B1F3B]">230</p>
+                    <p className="text-xs text-gray-600 font-semibold">Wrote</p>
+                  </div>
+                  <div className="bg-[#0B1F3B]/10 rounded-xl px-5 py-3 text-center">
+                    <p className="text-2xl font-black text-[#0B1F3B]">90</p>
+                    <p className="text-xs text-gray-600 font-semibold">Distinctions</p>
                   </div>
                 </div>
-                <div className="px-2">
-                    <p className="text-gray-400 text-xs font-bold mb-2">CLASS OF {entry.year}</p>
-                    <p className="text-gray-600 text-sm leading-relaxed">{entry.desc}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Provincial Awardee 2025 */}
+        <section className="mb-16 sm:mb-24">
+          <div className="bg-white/10 border border-white/20 rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-5">
+              <Trophy size={200} className="text-yellow-400" />
+            </div>
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Trophy className="text-yellow-400 w-8 h-8" />
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">2025 Provincial Awardee</h2>
+                <Trophy className="text-yellow-400 w-8 h-8" />
+              </div>
+              <div className="flex flex-col md:flex-row items-start gap-8">
+                <div className="w-40 h-40 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden">
+                  <img
+                    src="/assets/achievements/matubatuba-kanetso.jpg"
+                    alt="Matubatuba Kanetso"
+                    className="w-full h-full object-cover object-top"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="text-center text-white/50 p-4"><p class="font-bold text-sm">Matubatuba Kanetso</p><p class="text-xs mt-1">Add photo in public/assets/achievements/</p></div>';
+                    }}
+                  />
+                </div>
+                <div>
+                  <h3 className="text-3xl sm:text-4xl font-black text-white mb-2">Matubatuba Kanetso</h3>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    <span className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 px-4 py-1.5 rounded-full text-sm font-bold">
+                      🏆 Position 1 — Alfred Nzo West District
+                    </span>
+                    <span className="bg-white/10 border border-white/20 text-white px-4 py-1.5 rounded-full text-sm font-bold">
+                      ⭐ 7 Distinctions
+                    </span>
+                  </div>
+                  <p className="text-white/70 text-lg leading-relaxed">
+                    Matubatuba Kanetso achieved the highest position in the entire Alfred Nzo West district in the 2025 NSC examinations, earning 7 distinctions and representing Maluti SSS at the provincial awards alongside the MEC.
+                  </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Hall of Fame */}
+        <section className="mb-20 sm:mb-32">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 flex items-center justify-center gap-4">
+              <Trophy className="text-yellow-400 w-10 h-10 sm:w-12 sm:h-12" />
+              Hall of Fame
+              <Trophy className="text-yellow-400 w-10 h-10 sm:w-12 sm:h-12" />
+            </h2>
+            <p className="text-lg sm:text-xl text-white/70 max-w-3xl mx-auto">Celebrating outstanding learners.</p>
+            <p className="text-sm text-white/40 max-w-3xl mx-auto mt-2">Names and photos can be managed in the Staff Portal.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+            {hallOfFame.slice(0, 8).map((student, idx) => (
+              <motion.div
+                key={student.id || idx}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white/10 rounded-2xl shadow-xl overflow-hidden border border-white/20"
+              >
+                <StudentAvatar image={student.image} name={student.name} year={student.year} />
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold text-white mb-1">{student.name}</h3>
+                  <div className="text-white/60 text-sm font-bold mb-3 flex items-center justify-center gap-1">
+                    <Medal size={16} /> {student.title}
+                  </div>
+                  {student.desc ? <p className="text-white/40 text-xs leading-relaxed">{student.desc}</p> : null}
+                </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </section>
+
+        {/* Matric Results Summary */}
+        <section className="mb-20 sm:mb-32">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+              <BarChart3 className="text-white" /> Matric Results Summary
+            </h2>
+            <div className="flex flex-wrap gap-2 bg-white/10 p-1 rounded-xl">
+              {(['2025', '2024', '2023'] as const).map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setActiveResultsYear(year)}
+                  className={`px-4 sm:px-6 py-2 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                    activeResultsYear === year ? 'bg-white text-[#0B1F3B] shadow-md' : 'text-white/60 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeResultsYear}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.25 }}
+            >
+              {!currentResults ? (
+                <div className="text-center py-16 sm:py-24 text-white/40 bg-white/5 rounded-3xl border border-dashed border-white/20">
+                  <p className="text-xl font-bold mb-2">Notice</p>
+                  <p>No results data recorded for the year {activeResultsYear}.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-white rounded-3xl p-6 sm:p-8 md:p-12 text-[#0B1F3B] shadow-2xl relative overflow-hidden mb-10 sm:mb-12">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                      <TrendingUp size={200} />
+                    </div>
+                    <div className="relative z-10">
+                      <h3 className="text-xl sm:text-2xl font-bold mb-8 flex items-center gap-3">
+                        <Star className="text-yellow-500" /> {activeResultsYear} Performance Overview
+                      </h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                        <div className="bg-[#0B1F3B]/10 p-5 sm:p-6 rounded-2xl text-center md:text-left">
+                          <p className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">{currentResults.overall}%</p>
+                          <p className="text-[#0B1F3B]/70 text-sm font-medium">Overall Pass Rate</p>
+                        </div>
+                        <div className="bg-[#0B1F3B]/10 p-5 sm:p-6 rounded-2xl text-center md:text-left">
+                          <p className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">{currentResults.bachelor}</p>
+                          <p className="text-[#0B1F3B]/70 text-sm font-medium">
+                            Bachelor Passes ({currentResults.bachelorRate}%)
+                          </p>
+                        </div>
+                        <div className="bg-[#0B1F3B]/10 p-5 sm:p-6 rounded-2xl text-center md:text-left">
+                          <p className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">{currentResults.distinctions}</p>
+                          <p className="text-[#0B1F3B]/70 text-sm font-medium">Total Distinctions</p>
+                        </div>
+                        <div className="bg-[#0B1F3B]/10 p-5 sm:p-6 rounded-2xl text-center md:text-left">
+                          <p className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">{currentResults.wrote}</p>
+                          <p className="text-[#0B1F3B]/70 text-sm font-medium">Learners Wrote</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 rounded-3xl p-6 sm:p-8 border border-white/10">
+                    <h3 className="text-xl font-bold text-white mb-8">{activeResultsYear} Subject Pass Rates</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {currentResults.subjects.map((stat, i) => (
+                        <div key={i} className="bg-white/10 p-5 rounded-xl border border-white/20">
+                          <div className="flex justify-between items-center mb-3 gap-3">
+                            <span className="font-semibold text-white/80">{stat.subject}</span>
+                            <span className="text-white font-bold">{stat.rate}%</span>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${stat.rate}%` }}
+                              transition={{ duration: 0.45 }}
+                              className="bg-white h-2 rounded-full"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </section>
+
+        {/* Top Achievers Timeline */}
+        <section>
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center justify-center gap-3 mb-4">
+              <Calendar className="text-white" /> Top Achievers Timeline
+            </h2>
+            <p className="text-white/60 italic">Select a year to see the class achievers.</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 mb-10 sm:mb-12">
+            {yearsList.map((year) => (
+              <button
+                key={year}
+                onClick={() => setActiveAchieversYear(year)}
+                className={`px-4 sm:px-5 py-2 rounded-full font-bold transition-all text-sm ${
+                  activeAchieversYear === year
+                    ? 'bg-white text-[#0B1F3B] shadow-lg scale-105'
+                    : 'bg-white/10 text-white/60 border border-white/20 hover:border-white/40 hover:text-white'
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeAchieversYear}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.25 }}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8"
+            >
+              {achieversByYear[activeAchieversYear] && achieversByYear[activeAchieversYear].length > 0 ? (
+                achieversByYear[activeAchieversYear].map((person, i) => (
+                  <div key={i} className="text-center">
+                    <StudentAvatar image={person.image} name={person.name} year={activeAchieversYear} />
+                    <div className="mt-4">
+                      <h3 className="text-lg font-bold text-white">{person.name}</h3>
+                      <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">{person.title}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center text-white/40">
+                  <p>No achiever records found for {activeAchieversYear}.</p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </section>
       </div>
     </div>
   );

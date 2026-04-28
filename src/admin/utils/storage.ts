@@ -1,6 +1,4 @@
-// src/admin/utils/storage.ts
-
-// --- INTERFACES (Needed for the forms to work) ---
+// Storage utility — localStorage wrapper (swap with Supabase later)
 
 export interface NewsItem {
   id: string;
@@ -15,7 +13,7 @@ export interface DocumentItem {
   name: string;
   grade: string;
   subject: string;
-  fileData: string; 
+  fileData: string; // base64 for demo
   fileName: string;
   uploadDate: string;
 }
@@ -25,18 +23,25 @@ export type UploadedFile = {
   label: string;
   fileName: string;
   mimeType: string;
-  dataUrl: string;
+  dataUrl: string; // base64
 };
 
 export type SubjectMark = {
   subject: string;
-  mark: number;
+  mark: number; // 0-100
+};
+
+export type LearnerContact = {
+  homeTelephone?: string;
+  emergencyTelephone?: string;
+  learnerCell?: string;
+  learnerEmail?: string;
 };
 
 export type LearnerParticulars = {
   initials?: string;
   otherNames?: string;
-  identificationNumber?: string;
+  identificationNumber?: string; // ID / Passport
   citizenship?: string;
   race?: string;
   homeLanguage?: string;
@@ -47,41 +52,130 @@ export type LearnerParticulars = {
   modeOfTransport?: string;
   deceasedParent?: 'Mother' | 'Father' | 'Both' | 'None';
   religion?: string;
+  accessionNo?: string;
+  highestGradePassed?: string;
+  yearWhenGradeWasPassed?: string;
+};
+
+export type PreviousSchoolInfo = {
+  name?: string;
+  address?: string;
+  code?: string;
+  province?: string;
+  country?: string;
+};
+
+export type LearnerMedicalInfo = {
+  medicalAidNumber?: string;
+  medicalAidName?: string;
+  medicalAidMainMember?: string;
+  doctorName?: string;
+  doctorTelephoneNumber?: string;
+  doctorAddress?: string;
+  medicalCondition?: string;
+  specialProblemsRequiringCounselling?: string;
+  dexterity?: 'Right Handed' | 'Left Handed' | 'Ambidextrous';
+  socialGrant?: { reg?: 'Yes' | 'No'; rec?: 'Yes' | 'No' };
+};
+
+export type SiblingInfo = {
+  numberOfOtherChildrenAtSchool?: string;
+  siblings?: Array<{ name: string; grade: string; positionInFamily?: string }>;
 };
 
 export type ParentGuardian = {
   title?: string;
+  initials?: string;
   firstName?: string;
   surname?: string;
   gender?: string;
-  identificationNumber?: string;
+  race?: string;
+  homeLanguage?: string;
+  identificationNumber?: string; // ID / Passport
   accountPayer?: 'Yes' | 'No';
   residentialStreetAddress?: string;
+  citySuburb?: string;
+  code?: string;
+  employer?: string;
   occupation?: string;
+  surnameOfSpouse?: string;
+  occupationOfSpouse?: string;
+  spouseIdNumber?: string;
+  learnerResidesWithThisParent?: 'Yes' | 'No';
   relationshipToLearner?: string;
+  maritalStatusOfParent?: string;
+};
+
+export type CorrespondenceDetails = {
+  title?: string;
+  surname?: string;
+  postalAddress?: string;
+};
+
+export type OtherContactDetails = {
+  homeTelephone?: string;
+  faxNumber?: string;
+  spouseWorkTelephoneNumber?: string;
+  emailAddress?: string;
+  workTelephone?: string;
+  cellNumber?: string;
+  spouseCellNumber?: string;
+  spouseEmailAddress?: string;
 };
 
 export interface Application {
   id: string;
+
+  // Learner (minimum)
   firstName: string;
   lastName: string;
   dob: string;
   gender?: string;
   grade: string;
   year: string;
+
+  // Generated
   studentNumber: string;
+
+  // Legacy parent/guardian fields (keep for backward compatibility)
   guardianName: string;
   guardianRelationship?: string;
   guardianPhone: string;
   guardianEmail: string;
+
+  // Address (legacy)
   address: string;
   locality: string;
+
+  // School history (legacy)
   previousSchool: string;
+  lastGradeCompleted?: string;
+
+  // Notes (legacy)
+  medicalInfo?: string;
+
+  // New structured fields
+  learner?: LearnerParticulars;
+  learnerContact?: LearnerContact;
+  previousSchoolInfo?: PreviousSchoolInfo;
+  learnerMedicalInfo?: LearnerMedicalInfo;
+  siblingInfo?: SiblingInfo;
+  parentGuardian1?: ParentGuardian;
+  parentGuardian2?: ParentGuardian;
+  correspondenceDetails?: CorrespondenceDetails;
+  otherContactDetails?: OtherContactDetails;
+
+  // Boarding
   applicationType: 'General' | 'Boarding';
   boardingType?: string;
+
+  // Uploads
   uploads: UploadedFile[];
+
+  // Academic report capture (manual entry for now)
   subjectMarks: SubjectMark[];
   averageMark: number;
+
   status: 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected';
   submittedDate: string;
 }
@@ -110,6 +204,13 @@ export interface Activity {
   image: string;
 }
 
+export interface AchieverEntry {
+  id: string;
+  name: string;
+  achievement: string;
+  image: string;
+}
+
 export interface HallOfFameEntry {
   id: string;
   name: string;
@@ -128,140 +229,174 @@ export interface YearResults {
   subjects: { subject: string; rate: number }[];
 }
 
-// --- UTILS ---
-
-export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-}
-
-export function generateStudentNumber(year: string): string {
-  const key = `admin_student_counter_${year}`;
-  const current = Number(localStorage.getItem(key) || '0');
-  const next = current + 1;
-  localStorage.setItem(key, String(next));
-  return `${year}-${next.toString().padStart(6, '0')}`;
-}
-
-export function calculateAverageMark(subjectMarks: SubjectMark[]): number {
-  if (!subjectMarks || subjectMarks.length === 0) return 0;
-  const total = subjectMarks.reduce((sum, s) => sum + (s.mark || 0), 0);
-  return Math.round((total / subjectMarks.length) * 10) / 10;
-}
-
-// --- DEFAULT DATA (Maluti SSS Specific) ---
-
-const defaultNews: NewsItem[] = [
-  {
-    id: '1',
-    title: 'Welcome to the Official Maluti SSS Portal',
-    date: '2026-01-15',
-    content: 'We are proud to launch our new digital platform for learners and parents. Stay updated with news and academic results.',
-    image: '',
-  },
-  {
-    id: '2',
-    title: 'Matubatuba Kanetso: A Provincial Beacon',
-    date: '2026-01-20',
-    content: 'Congratulations to Matubatuba for his 7 distinctions in the 2025 NSC exams.',
-    image: '/Achiever2025.png',
-  }
-];
-
-const defaultContact: ContactInfo = {
-  address: 'Ramohlakoawa A/A, Maluti, 4740 (Matatiele), Eastern Cape',
-  phone: '039 256 7244 / +27 78 065 1426',
-  email: 'admin@malutisss.co.za',
-  monThu: '07:30 - 15:30',
-  friday: '07:30 - 13:30',
-  weekend: 'Closed',
-};
-
-const defaultAbout: AboutInfo = {
-  historyParagraphs: [
-    'Maluti Senior Secondary School is a public Quintile 3 school based in Ramohlakoawa A/A, Matatiele (EMIS: 200500551).',
-    'As a no-fee institution, we are committed to providing top-tier secondary education to the community without financial barriers.',
-    'The school has a rich history of academic resilience, recently achieving an 83% pass rate in the 2025 NSC examinations.'
-  ],
-  principalName: 'Mr Lulamile Masoka',
-  principalTitle: 'Principal',
-  principalMessage: [
-    'Welcome to Maluti Senior Secondary School. Our 2025 results prove that excellence is possible through discipline.',
-    'We celebrate every learner, especially our top achievers who put Matatiele on the provincial map.',
-    'Together, we continue to build a legacy of academic pride.'
-  ],
-};
-
-const defaultHall: HallOfFameEntry[] = [
-  { 
-    id: 'mat-2025', 
-    name: 'Matubatuba Kanetso', 
-    title: 'Provincial Top Achiever', 
-    year: '2025', 
-    desc: 'Recorded a historic 7 Distinctions in the NSC exams.', 
-    image: '/Achiever2025.png' 
-  },
-  { 
-    id: 'class-2025', 
-    name: 'NSC Class of 2025', 
-    title: '83% Pass Rate', 
-    year: '2025', 
-    desc: 'Achieved a total of 90 subject distinctions school-wide.', 
-    image: '' 
-  },
-];
-
-const defaultResults: Record<string, YearResults> = {
-  '2025': {
-    overall: 83.0,
-    bachelor: 0, 
-    bachelorRate: 0,
-    distinctions: 90,
-    wrote: 230,
-    subjects: [
-      { subject: 'Passed', rate: 191 },
-      { subject: 'Candidates', rate: 230 },
-    ],
-  },
-};
-
-// --- STORAGE HELPERS ---
-
-function getItems<T>(key: string, fallback: T[]): T[] {
+function getItems<T>(key: string): T[] {
   try {
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : fallback;
-  } catch { return fallback; }
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function setItems<T>(key: string, items: T[]): void {
+  localStorage.setItem(key, JSON.stringify(items));
 }
 
 function getObject<T>(key: string, fallback: T): T {
   try {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : fallback;
-  } catch { return fallback; }
+  } catch {
+    return fallback;
+  }
 }
 
-export const getNews = () => getItems<NewsItem>('admin_news', defaultNews);
-export const setNews = (items: NewsItem[]) => localStorage.setItem('admin_news', JSON.stringify(items));
+function setObject<T>(key: string, obj: T): void {
+  localStorage.setItem(key, JSON.stringify(obj));
+}
 
-export const getDocuments = () => getItems<DocumentItem>('admin_documents', []);
-export const setDocuments = (items: DocumentItem[]) => localStorage.setItem('admin_documents', JSON.stringify(items));
+export function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
 
-export const getApplications = () => getItems<Application>('admin_applications', []);
-export const setApplications = (items: Application[]) => localStorage.setItem('admin_applications', JSON.stringify(items));
+function padNumber(num: number, length: number) {
+  return num.toString().padStart(length, '0');
+}
 
+export function generateStudentNumber(year: string): string {
+  // Example: 2027-000123
+  const key = `admin_student_counter_${year}`;
+  const current = Number(localStorage.getItem(key) || '0');
+  const next = current + 1;
+  localStorage.setItem(key, String(next));
+  return `${year}-${padNumber(next, 6)}`;
+}
+
+export function calculateAverageMark(subjectMarks: SubjectMark[]): number {
+  if (!subjectMarks || subjectMarks.length === 0) return 0;
+  const total = subjectMarks.reduce((sum, s) => sum + (Number.isFinite(s.mark) ? s.mark : 0), 0);
+  return Math.round((total / subjectMarks.length) * 10) / 10;
+}
+
+// News
+const defaultNews: NewsItem[] = [
+  {
+    id: '1',
+    title: '2027 Applications Open',
+    date: 'Now open',
+    content:
+      'Applications for admissions and boarding for the 2027 academic year are now open. Please submit your application using the online forms.',
+    image: '',
+  },
+];
+export const getNews = () => (getItems<NewsItem>('admin_news').length ? getItems<NewsItem>('admin_news') : defaultNews);
+export const setNews = (items: NewsItem[]) => setItems('admin_news', items);
+
+// Documents
+export const getDocuments = () => getItems<DocumentItem>('admin_documents');
+export const setDocuments = (items: DocumentItem[]) => setItems('admin_documents', items);
+
+// Applications
+export const getApplications = () => getItems<Application>('admin_applications');
+export const setApplications = (items: Application[]) => setItems('admin_applications', items);
+
+// Contact
+const defaultContact: ContactInfo = {
+  address: 'Ramohlakoawa A/A, Maluti, 4740, Matatiele, Eastern Cape',
+  phone: '039-256-7244 / +27 78 065-1426',
+  email: 'malutisss@example.co.za',
+  monThu: '07:30 - 15:30',
+  friday: '07:30 - 13:30',
+  weekend: 'Closed',
+};
 export const getContact = () => getObject<ContactInfo>('admin_contact', defaultContact);
-export const setContact = (info: ContactInfo) => localStorage.setItem('admin_contact', JSON.stringify(info));
+export const setContact = (info: ContactInfo) => setObject('admin_contact', info);
 
+// About
+const defaultAbout: AboutInfo = {
+  historyParagraphs: [
+    'Maluti Senior Secondary School is a public no-fee school serving learners in and around Maluti, Matatiele (Eastern Cape). Located at Ramohlakoawa A/A, Maluti 4740, the school carries the EMIS number 200500551 and is classified Quintile 3.',
+    'The school is committed to disciplined learning, community values, and strong academic outcomes — as demonstrated by an 83% matric pass rate in 2025 and a provincial district top achiever.',
+    'Parents and guardians are encouraged to engage with the school through meetings, events, and ongoing learner support. Follow us on Facebook: "Maluti SSS official".',
+  ],
+  principalName: 'Lulamile Masoka',
+  principalTitle: 'Principal',
+  principalMessage: [
+    'Welcome to Maluti Senior Secondary School. We believe every learner can achieve with consistent effort, good support, and a strong learning environment.',
+    'We value respect, responsibility, and pride in our school community. Together, with true determination, hard work and discipline, we build a culture of achievement.',
+  ],
+};
 export const getAbout = () => getObject<AboutInfo>('admin_about', defaultAbout);
-export const setAbout = (info: AboutInfo) => localStorage.setItem('admin_about', JSON.stringify(info));
+export const setAbout = (info: AboutInfo) => setObject('admin_about', info);
 
-export const getActivities = () => getItems<Activity>('admin_activities', []);
-export const setActivities = (items: Activity[]) => localStorage.setItem('admin_activities', JSON.stringify(items));
+// Activities
+const defaultActivities: Activity[] = [
+  { id: '1', name: 'Soccer', category: 'Sport', description: 'Training and competition at school and district level.', image: '' },
+  { id: '2', name: 'Netball', category: 'Sport', description: 'Competitive teams across age groups.', image: '' },
+  { id: '3', name: 'Athletics', category: 'Sport', description: 'Track and field development and competition.', image: '' },
+  { id: '4', name: 'Debating', category: 'Academic', description: 'Building critical thinking and communication skills.', image: '' },
+  { id: '5', name: 'Choir', category: 'Culture', description: 'Music and performance for school events and competitions.', image: '' },
+];
+export const getActivities = () => (getItems<Activity>('admin_activities').length ? getItems<Activity>('admin_activities') : defaultActivities);
+export const setActivities = (items: Activity[]) => setItems('admin_activities', items);
 
-export const getHallOfFame = () => getItems<HallOfFameEntry>('admin_hall_of_fame', defaultHall);
-export const setHallOfFame = (items: HallOfFameEntry[]) => localStorage.setItem('admin_hall_of_fame', JSON.stringify(items));
+// Achievers by year
+export const getAchieversByYear = (year: string) => getItems<AchieverEntry>(`admin_achievers_${year}`);
+export const setAchieversByYear = (year: string, items: AchieverEntry[]) => setItems(`admin_achievers_${year}`, items);
 
-export const getResultsByYear = (year: string) => defaultResults[year] || null;
+// Hall of Fame
+const defaultHall: HallOfFameEntry[] = [
+  { id: '1', name: 'Matubatuba Kanetso', title: 'Provincial Awardee — 7 Distinctions', year: '2025', desc: 'Position 1 in Alfred Nzo West District. Represented Maluti SSS at provincial awards alongside the MEC.', image: '/assets/achievements/matubatuba-kanetso.jpg' },
+  { id: '2', name: 'Top Achiever 2', title: 'Top Achiever', year: '2025', desc: '', image: '' },
+  { id: '3', name: 'Top Achiever 3', title: 'Top Achiever', year: '2025', desc: '', image: '' },
+];
+export const getHallOfFame = () =>
+  getItems<HallOfFameEntry>('admin_hall_of_fame').length ? getItems<HallOfFameEntry>('admin_hall_of_fame') : defaultHall;
+export const setHallOfFame = (items: HallOfFameEntry[]) => setItems('admin_hall_of_fame', items);
+
+// Results by year
+const defaultResults: Record<string, YearResults> = {
+  '2025': {
+    overall: 83,
+    bachelor: 0,
+    bachelorRate: 0,
+    distinctions: 90,
+    wrote: 230,
+    subjects: [
+      { subject: 'English FAL', rate: 85 },
+      { subject: 'Mathematics', rate: 70 },
+      { subject: 'Physical Sciences', rate: 72 },
+      { subject: 'Life Orientation', rate: 100 },
+      { subject: 'Life Sciences', rate: 78 },
+      { subject: 'Geography', rate: 80 },
+    ],
+  },
+  '2024': {
+    overall: 94.0,
+    bachelor: 0,
+    bachelorRate: 0,
+    distinctions: 0,
+    wrote: 0,
+    subjects: [
+      { subject: 'English FAL', rate: 100 },
+      { subject: 'Life Orientation', rate: 100 },
+    ],
+  },
+  '2023': {
+    overall: 92.1,
+    bachelor: 0,
+    bachelorRate: 0,
+    distinctions: 0,
+    wrote: 0,
+    subjects: [
+      { subject: 'Life Orientation', rate: 100 },
+      { subject: 'Geography', rate: 93.5 },
+    ],
+  },
+};
+export const getResultsByYear = (year: string) =>
+  getObject<YearResults | null>(`admin_results_${year}`, defaultResults[year] || null);
+export const setResultsByYear = (year: string, data: YearResults) => setObject(`admin_results_${year}`, data);
 
 // Auth
 export const isAuthenticated = () => localStorage.getItem('admin_auth') === 'true';

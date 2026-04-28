@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Award, TrendingUp, Users, Megaphone, ArrowRight, Star } from 'lucide-react';
 
 const stats = [
@@ -14,7 +14,8 @@ export const Home = () => {
       {/* Notices */}
       <section className="py-10 sm:py-12 bg-[#0B1F3B]">
         <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Admissions Notice - Now spans full width since Boarding is gone */}
             <div className="rounded-3xl border border-white/20 bg-white/10 p-6 sm:p-7 flex gap-4 items-start">
               <div className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white shrink-0">
                 <Megaphone size={22} />
@@ -32,20 +33,6 @@ export const Home = () => {
                 </p>
                 <a href="/admissions" className="mt-4 inline-flex items-center gap-2 text-white font-bold hover:text-white/70 transition-colors">
                   Apply now <ArrowRight size={18} />
-                </a>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/20 bg-white/5 p-6 sm:p-7 flex gap-4 items-start">
-              <div className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white shrink-0">
-                <Megaphone size={22} />
-              </div>
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="text-sm font-black uppercase tracking-widest text-white">Boarding</div>
-                  <span className="px-2 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20 text-white/80">
-                    2027
-                  </span>
                 </a>
               </div>
             </div>
@@ -99,7 +86,7 @@ export const Home = () => {
       {/* Motto Section */}
       <section className="py-24 bg-white/5 rounded-3xl mx-4 my-8">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="section-title">Our Motto</h2>
+          <h2 className="section-title text-white">Our Motto</h2>
           <p className="text-2xl text-white/80 leading-relaxed font-light italic">
             "Your true determination, hard work and discipline."
           </p>

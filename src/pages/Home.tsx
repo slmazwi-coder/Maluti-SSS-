@@ -15,7 +15,7 @@ export const Home = () => {
       <section className="py-10 sm:py-12 bg-[#0B1F3B]">
         <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-4">
-            {/* Admissions Notice - Now spans full width since Boarding is gone */}
+            {/* Admissions Notice - Full Width */}
             <div className="rounded-3xl border border-white/20 bg-white/10 p-6 sm:p-7 flex gap-4 items-start">
               <div className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white shrink-0">
                 <Megaphone size={22} />
@@ -40,7 +40,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Stats Quick View */}
+      {/* Stats Quick View - Fixed Mobile Layout */}
       <section className="py-12 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat, i) => (
@@ -50,14 +50,18 @@ export const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.3 }}
-              className="bg-white p-8 rounded-2xl shadow-xl flex items-center gap-6 border-b-4 border-[#0B1F3B]"
+              className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 border-b-4 border-[#0B1F3B]"
             >
-              <div className="p-4 bg-[#0B1F3B]/10 rounded-xl text-[#0B1F3B]">
+              <div className="p-4 bg-[#0B1F3B]/10 rounded-xl text-[#0B1F3B] shrink-0">
                 <stat.icon size={32} />
               </div>
-              <div>
-                <p className="text-3xl font-bold text-[#0B1F3B]">{stat.value}</p>
-                <p className="text-gray-500 font-medium">{stat.label}</p>
+              <div className="text-center sm:text-left min-w-0 w-full">
+                <p className="text-3xl sm:text-3xl font-black text-[#0B1F3B] leading-none">
+                  {stat.value}
+                </p>
+                <p className="text-gray-500 font-medium text-sm sm:text-base mt-2">
+                  {stat.label}
+                </p>
               </div>
             </motion.div>
           ))}
@@ -86,11 +90,11 @@ export const Home = () => {
       {/* Motto Section */}
       <section className="py-24 bg-white/5 rounded-3xl mx-4 my-8">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="section-title text-white">Our Motto</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">Our Motto</h2>
           <p className="text-2xl text-white/80 leading-relaxed font-light italic">
             "Your true determination, hard work and discipline."
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
             {['EMIS: 200500551', 'Quintile 3', 'No-Fee School'].map((item, i) => (
               <div key={i} className="bg-white/10 rounded-xl p-4 text-center border border-white/20">
                 <p className="text-white font-bold text-sm">{item}</p>

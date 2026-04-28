@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Quote, Image as ImageIcon } from 'lucide-react';
 import { getAbout, type AboutInfo } from '../admin/utils/storage';
 
@@ -8,7 +8,7 @@ export const About = () => {
   const [campusFailed, setCampusFailed] = useState(false);
   const [principalFailed, setPrincipalFailed] = useState(false);
 
-  // Simplified paths - make sure these are in your 'public' folder
+  // Updated paths to match your GitHub public folder root
   const campusImageUrl = '/campus.png';
   const principalImageUrl = '/principal.jpg';
 
@@ -19,13 +19,13 @@ export const About = () => {
   return (
     <div className="py-12 sm:py-16 bg-[#0B1F3B] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title">About Maluti Senior Secondary School</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-12 text-center">About Maluti Senior Secondary School</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-16 sm:mb-24">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
             <h2 className="text-2xl font-bold text-white mb-6">Our School</h2>
@@ -43,7 +43,7 @@ export const About = () => {
                 { label: 'EMIS', value: '200500551' },
                 { label: 'Quintile', value: '3 — No-Fee School' },
               ].map((item, i) => (
-                <div key={i} className="bg-white/10 rounded-xl p-4 border border-white/20">
+                <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
                   <p className="text-white/50 text-xs uppercase tracking-widest font-bold mb-1">{item.label}</p>
                   <p className="text-white font-semibold text-sm">{item.value}</p>
                 </div>
@@ -52,37 +52,53 @@ export const About = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.05 }}
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="rounded-2xl overflow-hidden shadow-2xl border border-white/20"
+            className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20 aspect-video"
           >
-            <img
-              src={campusImageUrl}
-              alt="Maluti SSS campus"
-              className="w-full h-[260px] sm:h-[400px] object-cover"
-              onError={() => setCampusFailed(true)}
-            />
-            {campusFailed && (
-              <div className="absolute inset-0 bg-slate-800 flex items-center justify-center text-white/50">
-                <p>Campus Image Missing (Upload campus.png to public folder)</p>
+            {!campusFailed ? (
+              <img
+                src={campusImageUrl}
+                alt="Maluti SSS campus"
+                className="w-full h-full object-cover"
+                onError={() => setCampusFailed(true)}
+              />
+            ) : (
+              <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white/40">
+                <div className="text-center">
+                  <ImageIcon size={48} className="mx-auto mb-2" />
+                  <p>Campus Image Missing</p>
+                </div>
               </div>
             )}
           </motion.div>
         </div>
 
-        <section className="bg-white/10 rounded-3xl p-6 sm:p-10 md:p-12 mb-16 sm:mb-24 relative overflow-hidden border border-white/20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 items-center">
+        {/* Principal's Message */}
+        <section className="bg-white/5 rounded-3xl p-6 sm:p-10 md:p-12 mb-16 relative overflow-hidden border border-white/10">
+          <div className="absolute top-0 right-0 p-8 text-white/5">
+            <Quote size={120} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 items-center relative z-10">
             <div className="col-span-1">
               <div className="aspect-square rounded-2xl overflow-hidden border-4 border-white/20 shadow-lg bg-white/10">
-                <img
-                  src={principalImageUrl}
-                  alt="Principal"
-                  className="w-full h-full object-cover object-top"
-                  onError={() => setPrincipalFailed(true)}
-                />
+                {!principalFailed ? (
+                  <img
+                    src={principalImageUrl}
+                    alt="Principal"
+                    className="w-full h-full object-cover object-top"
+                    onError={() => setPrincipalFailed(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/30">
+                    <ImageIcon size={40} />
+                  </div>
+                )}
               </div>
+
               <div className="mt-4 text-center">
                 <h3 className="text-xl font-bold text-white">{data.principalName}</h3>
                 <p className="text-white/60">{data.principalTitle}</p>

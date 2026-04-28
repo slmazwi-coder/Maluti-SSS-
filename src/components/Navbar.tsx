@@ -11,7 +11,6 @@ const navLinks = [
   { name: 'Sport', path: '/sport' },
   { name: 'Activities', path: '/activities' },
   { name: 'General Application', path: '/admissions' },
-  { name: 'Boarding Application', path: '/boarding' },
   { name: 'Contact', path: '/contact' },
 ];
 

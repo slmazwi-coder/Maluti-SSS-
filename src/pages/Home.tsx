@@ -46,13 +46,6 @@ export const Home = () => {
                   <span className="px-2 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20 text-white/80">
                     2027
                   </span>
-                </div>
-                <h3 className="text-xl font-extrabold text-white mt-2">Boarding applications are now open</h3>
-                <p className="text-white/70 mt-1">
-                  Hostel accommodation applications for the <span className="font-bold text-white">2027</span> academic year are open.
-                </p>
-                <a href="/boarding" className="mt-4 inline-flex items-center gap-2 text-white font-bold hover:text-white/70 transition-colors">
-                  Apply for boarding <ArrowRight size={18} />
                 </a>
               </div>
             </div>

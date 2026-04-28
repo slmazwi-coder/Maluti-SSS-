@@ -9,14 +9,13 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-12 w-12 rounded-xl bg-white overflow-hidden border border-white/20 shadow-lg flex items-center justify-center">
-                <img
-                  src="/assets/Logo.png"
-                  alt="Maluti SSS logo"
-                  className="h-full w-full object-contain p-1"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              </div>
+              <img
+                src="/assets/Logo.png"
+                alt="Maluti SSS logo"
+                className="h-16 w-16 object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
               <h3 className="text-xl font-bold">Maluti SSS</h3>
             </div>
             <p className="text-white/60 mb-2 text-sm">Senior Secondary School</p>

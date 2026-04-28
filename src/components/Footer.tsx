@@ -10,10 +10,9 @@ export const Footer = () => {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-5">
               <img
-                src="/assets/Logo.png"
+                src="/Logo.png"
                 alt="Maluti SSS logo"
                 className="h-16 w-16 object-contain"
-                style={{ filter: 'brightness(0) invert(1)' }}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               <h3 className="text-xl font-bold">Maluti SSS</h3>
@@ -55,12 +54,11 @@ export const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-6 border-b border-white/20 pb-2">Quick Links</h4>
             <ul className="space-y-3 text-white/70">
-              <li><a href="/about" className="hover:text-white transition-colors">About Our School</a></li>
-              <li><a href="/documents" className="hover:text-white transition-colors">Documents</a></li>
-              <li><a href="/achievements" className="hover:text-white transition-colors">Achievements</a></li>
-              <li><a href="/admissions" className="hover:text-white transition-colors">General Application</a></li>
-              <li><a href="/boarding" className="hover:text-white transition-colors">Boarding Application</a></li>
-              <li><a href="/student/login" className="hover:text-white transition-colors">Student Portal</a></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">About Our School</Link></li>
+              <li><Link to="/documents" className="hover:text-white transition-colors">Documents</Link></li>
+              <li><Link to="/achievements" className="hover:text-white transition-colors">Achievements</Link></li>
+              <li><Link to="/admissions" className="hover:text-white transition-colors">General Application</Link></li>
+              <li><Link to="/student/login" className="hover:text-white transition-colors">Student Portal</Link></li>
             </ul>
           </div>
 
@@ -76,7 +74,6 @@ export const Footer = () => {
 
         <div className="border-t border-white/10 pt-8 text-center text-white/50 text-sm">
           <p>© {new Date().getFullYear()} Maluti Senior Secondary School. All Rights Reserved.</p>
-          <p className="text-white/30 text-xs mt-1">Ramohlakoawa A/A, Maluti, 4740, Matatiele, Eastern Cape | EMIS: 200500551</p>
           <Link
             to="/admin/login"
             className="text-white/20 hover:text-white/50 text-xs mt-2 inline-block transition-colors"

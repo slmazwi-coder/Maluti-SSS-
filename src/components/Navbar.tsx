@@ -25,14 +25,13 @@ export const Navbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-lg overflow-hidden">
-                <img
-                  src="/assets/Logo.png"
-                  alt="Maluti SSS logo"
-                  className="h-full w-full object-contain p-1"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              </div>
+              <img
+                src="/assets/Logo.png"
+                alt="Maluti SSS logo"
+                className="h-16 w-16 object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
               <div className="hidden md:block">
                 <span className="text-lg font-bold text-white block leading-none">Maluti SSS</span>
                 <span className="text-xs font-semibold text-white/60 uppercase tracking-widest">Senior Secondary School</span>

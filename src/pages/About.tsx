@@ -8,9 +8,10 @@ export const About = () => {
   const [campusFailed, setCampusFailed] = useState(false);
   const [principalFailed, setPrincipalFailed] = useState(false);
 
-  // Added ?v=1 to force the browser to reload the image from the server
-  const campusImageUrl = '/campus.png?v=1'; 
-  const principalImageUrl = '/principal.jpg?v=1';
+  // VITE RULE: Do not include "public" in the path. 
+  // If the file is in public/assets/about/campus.png, use the path below:
+  const campusImageUrl = "/assets/about/campus.png"; 
+  const principalImageUrl = "/principal.jpg"; // Keeping this as root based on previous info
 
   useEffect(() => {
     setData(getAbout());
@@ -61,16 +62,12 @@ export const About = () => {
               src={campusImageUrl}
               alt="Maluti SSS campus"
               className="w-full h-full object-cover"
-              onError={(e) => {
-                console.error("Image failed to load:", campusImageUrl);
-                setCampusFailed(true);
-              }}
+              onError={() => setCampusFailed(true)}
             />
             {campusFailed && (
               <div className="text-center p-10">
                 <ImageIcon size={48} className="text-white/20 mx-auto mb-4" />
-                <p className="text-white/40 text-sm">Campus photo loading...</p>
-                <p className="text-white/20 text-[10px] mt-2 italic">Check if file is in public/campus.png</p>
+                <p className="text-white/40 text-sm">Image not found at {campusImageUrl}</p>
               </div>
             )}
           </motion.div>
